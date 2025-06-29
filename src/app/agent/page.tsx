@@ -1,7 +1,12 @@
-export default function Agent() {
+'use client';
+
+export default function AgentPage() {
   return (
-    <div className="flex items-center justify-center h-full">
-      <h1 className="text-3xl">🧠 Agent Module Coming Soon...</h1>
+    <div className="h-full p-4">
+      <h1 className="text-2xl font-bold mb-4">🤖 Agent Interface</h1>
+      <p className="text-sm text-gray-600">
+        This is where your AI agent will live. Future commands, responses, and tasks will go here.
+      </p>
     </div>
   );
 }

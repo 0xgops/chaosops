@@ -1,9 +1,12 @@
-import Console from '../components/Console';
+'use client';
+
+import Console from './Console';
 
 export default function ConsolePage() {
   return (
-    <main className="flex-1 p-4 bg-white overflow-auto flex flex-col h-screen">
+    <div className="h-full flex flex-col">
+      <h1 className="text-2xl font-bold mb-4">🧠 Console</h1>
       <Console />
-    </main>
+    </div>
   );
 }

@@ -1,5 +1,4 @@
 import Sidebar from './components/Sidebar';
-import Console from './components/Console';
 import { Inter } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -31,12 +30,8 @@ export default function RootLayout({
 
           {/* 🔥 Main Layout */}
           <div className="flex flex-1">
-            {/* 🗂️ Sidebar */}
             <Sidebar />
-
-            {/* 💻 Console */}
             <main className="flex-1 p-4 bg-white overflow-auto flex flex-col h-screen">
-              <Console />
               {children}
             </main>
           </div>
