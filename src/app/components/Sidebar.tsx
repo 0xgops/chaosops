@@ -13,32 +13,33 @@ export default function Sidebar() {
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<number | null>(null);
 
-  // Load notes
+  // Load notes from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('chaosops-notes');
-    if (saved) {
-      setNotes(JSON.parse(saved));
-    }
+    if (saved) setNotes(JSON.parse(saved));
   }, []);
 
-  // Save notes
+  // Save notes to localStorage
   useEffect(() => {
     localStorage.setItem('chaosops-notes', JSON.stringify(notes));
   }, [notes]);
 
   const addNote = () => {
-    if (input.trim() === '') return;
-    const timestamp = new Date().toLocaleString();
-    const newNote: Note = { text: input, timestamp };
+    if (!input.trim()) return;
+    const newNote: Note = {
+      text: input,
+      timestamp: new Date().toLocaleString(),
+    };
     setNotes([newNote, ...notes]);
     setInput('');
   };
 
   const deleteNote = (index: number) => {
-    if (!confirm('Delete this note?')) return;
-    const newNotes = [...notes];
-    newNotes.splice(index, 1);
-    setNotes(newNotes);
+    if (confirm('Delete this note?')) {
+      const newNotes = [...notes];
+      newNotes.splice(index, 1);
+      setNotes(newNotes);
+    }
   };
 
   const clearAll = () => {
@@ -85,7 +86,7 @@ export default function Sidebar() {
         } else {
           alert('Invalid file format.');
         }
-      } catch (err) {
+      } catch {
         alert('Failed to parse file.');
       }
     };
