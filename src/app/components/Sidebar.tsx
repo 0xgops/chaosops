@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import ThemeToggle from './ThemeToggle';
 
 interface Note {
   text: string;
@@ -13,13 +14,15 @@ export default function Sidebar() {
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<number | null>(null);
 
-  // Load notes from localStorage
+  // Load notes
   useEffect(() => {
     const saved = localStorage.getItem('chaosops-notes');
-    if (saved) setNotes(JSON.parse(saved));
+    if (saved) {
+      setNotes(JSON.parse(saved));
+    }
   }, []);
 
-  // Save notes to localStorage
+  // Save notes
   useEffect(() => {
     localStorage.setItem('chaosops-notes', JSON.stringify(notes));
   }, [notes]);
@@ -35,11 +38,10 @@ export default function Sidebar() {
   };
 
   const deleteNote = (index: number) => {
-    if (confirm('Delete this note?')) {
-      const newNotes = [...notes];
-      newNotes.splice(index, 1);
-      setNotes(newNotes);
-    }
+    if (!confirm('Delete this note?')) return;
+    const newNotes = [...notes];
+    newNotes.splice(index, 1);
+    setNotes(newNotes);
   };
 
   const clearAll = () => {
@@ -79,9 +81,7 @@ export default function Sidebar() {
       try {
         const imported = JSON.parse(event.target?.result as string);
         if (Array.isArray(imported)) {
-          const validNotes = imported.filter(
-            (n) => n.text && n.timestamp
-          );
+          const validNotes = imported.filter((n) => n.text && n.timestamp);
           setNotes([...validNotes, ...notes]);
         } else {
           alert('Invalid file format.');
@@ -98,8 +98,11 @@ export default function Sidebar() {
   );
 
   return (
-    <aside className="bg-gray-100 w-64 p-4 flex flex-col">
-      <h2 className="text-lg font-bold mb-2">Scratchpad 🗂️</h2>
+    <aside className="bg-gray-100 dark:bg-zinc-800 w-64 p-4 flex flex-col">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-bold">Scratchpad 🗂️</h2>
+        <ThemeToggle />
+      </div>
 
       <input
         className="border p-2 mb-2 rounded"
@@ -114,18 +117,18 @@ export default function Sidebar() {
 
       <div className="flex gap-2 mb-2">
         <button
-          className="bg-black text-white px-3 py-1 rounded"
+          className="bg-black text-white px-3 py-1 rounded hover:opacity-80 transition"
           onClick={addNote}
         >
           + Add
         </button>
         <button
-          className="bg-blue-500 text-white px-3 py-1 rounded"
+          className="bg-blue-500 text-white px-3 py-1 rounded hover:opacity-80 transition"
           onClick={exportNotes}
         >
           ⬇️ Export
         </button>
-        <label className="bg-green-600 text-white px-3 py-1 rounded cursor-pointer">
+        <label className="bg-green-600 text-white px-3 py-1 rounded cursor-pointer hover:opacity-80 transition">
           ⬆️ Import
           <input type="file" accept=".json" className="hidden" onChange={importNotes} />
         </label>
@@ -139,7 +142,7 @@ export default function Sidebar() {
           onChange={(e) => setSearch(e.target.value)}
         />
         <button
-          className="bg-red-500 text-white px-2 rounded"
+          className="bg-red-500 text-white px-2 rounded hover:opacity-80 transition"
           onClick={clearAll}
         >
           🗑️ Clear All
@@ -150,7 +153,7 @@ export default function Sidebar() {
         {filteredNotes.map((note, i) => (
           <div
             key={i}
-            className="bg-white p-2 rounded shadow flex flex-col gap-1"
+            className="bg-white dark:bg-zinc-700 p-2 rounded shadow flex flex-col gap-1"
           >
             <div className="flex justify-between">
               <span className="text-sm font-medium">

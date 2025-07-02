@@ -1,6 +1,7 @@
 import './globals.css';
-import Sidebar from './components/Sidebar';
 import { Inter } from 'next/font/google';
+import { ThemeProvider } from 'next-themes';
+import Sidebar from './components/Sidebar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -15,32 +16,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-gray-50`}>
-        <div className="flex flex-col h-screen">
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} bg-gray-50 dark:bg-black`}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <div className="flex flex-col h-screen">
 
-          {/* 🔳 Top Navigation */}
-          <header className="bg-black text-white p-4 flex justify-between items-center">
-            <h1 className="text-xl">ChaosOps 🧠🦾</h1>
-            <div className="space-x-4 text-sm">
-              <span>🟢 Connected</span>
-              <span>Operator: 0xGOPS</span>
-              <span>Project: ChaosOps</span>
+            {/* 🔳 Top Bar */}
+            <header className="bg-black text-white p-4 flex justify-between items-center">
+              <h1 className="text-xl">ChaosOps 🧠</h1>
+              <div className="space-x-4 text-sm">
+                <span className="hidden sm:inline">🟢 Connected</span>
+                <span>Operator: 0xGOPS</span>
+                <span>Project: ChaosOps</span>
+              </div>
+            </header>
+
+            <div className="flex flex-1">
+              <Sidebar />
+              <main className="flex-1 p-4 bg-white dark:bg-zinc-900 overflow-auto">
+                {children}
+              </main>
             </div>
-          </header>
-
-          {/* 🔥 Main App Layout */}
-          <div className="flex flex-1">
-            {/* Sidebar for Notes */}
-            <Sidebar />
-
-            {/* Dynamic Content */}
-            <main className="flex-1 p-4 bg-white overflow-auto">
-              {children}
-            </main>
           </div>
-
-        </div>
+        </ThemeProvider>
       </body>
     </html>
   );
