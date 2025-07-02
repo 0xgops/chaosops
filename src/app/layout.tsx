@@ -1,6 +1,5 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
-import { ThemeProvider } from 'next-themes';
 import Sidebar from './components/Sidebar';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -16,29 +15,45 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-gray-50 dark:bg-black`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div className="flex flex-col h-screen">
-
-            {/* 🔳 Top Bar */}
-            <header className="bg-black text-white p-4 flex justify-between items-center">
-              <h1 className="text-xl">ChaosOps 🧠</h1>
-              <div className="space-x-4 text-sm">
-                <span className="hidden sm:inline">🟢 Connected</span>
-                <span>Operator: 0xGOPS</span>
-                <span>Project: ChaosOps</span>
-              </div>
-            </header>
-
-            <div className="flex flex-1">
-              <Sidebar />
-              <main className="flex-1 p-4 bg-white dark:bg-zinc-900 overflow-auto">
-                {children}
-              </main>
+    <html lang="en">
+      <body
+        className={`${inter.className} bg-gradient-to-br 
+        from-gray-100 to-white dark:from-zinc-900 dark:to-black
+        text-black dark:text-white transition-colors`}
+      >
+        <div className="flex flex-col h-screen">
+          {/* 🔳 Top Bar */}
+          <header
+            className="bg-black/80 dark:bg-zinc-950/80 
+            backdrop-blur-md border-b border-white/10 dark:border-zinc-800 
+            text-white p-4 flex justify-between items-center 
+            shadow-md"
+          >
+            <h1 className="text-xl font-bold">
+              ChaosOps 🧠🦾
+            </h1>
+            <div className="space-x-4 text-sm">
+              <span className="text-green-400">🟢 Connected</span>
+              <span>Operator: 0xGOPS</span>
+              <span>Project: ChaosOps</span>
             </div>
+          </header>
+
+          {/* 🔥 Main Layout */}
+          <div className="flex flex-1">
+            {/* 🗂️ Sidebar */}
+            <Sidebar />
+
+            {/* 💻 Main */}
+            <main className="flex-1 p-4 
+              bg-white/70 dark:bg-zinc-900/50 
+              backdrop-blur-md rounded-xl shadow-xl 
+              border border-white/10 dark:border-zinc-800 
+              overflow-auto flex flex-col gap-4">
+              {children}
+            </main>
           </div>
-        </ThemeProvider>
+        </div>
       </body>
     </html>
   );

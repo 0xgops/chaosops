@@ -1,97 +1,69 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function Console() {
-  const [logs, setLogs] = useState<string[]>([]);
+  const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState('');
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const saved = localStorage.getItem('chaosops-console-logs');
-    if (saved) setLogs(JSON.parse(saved));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('chaosops-console-logs', JSON.stringify(logs));
-  }, [logs]);
-
-  const appendLog = (message: string) => {
-    const timestamp = new Date().toLocaleTimeString();
-    const logEntry = `[${timestamp}] ${message}`;
-    setLogs((prev) => [...prev, logEntry]);
-  };
-
-  const handleCommand = () => {
+  const sendMessage = () => {
     if (!input.trim()) return;
-    appendLog(`> ${input}`);
-
-    parseCommand(input.trim().toLowerCase());
-
+    setMessages((prev) => [...prev, input]);
     setInput('');
   };
 
-  const parseCommand = (cmd: string) => {
-    if (cmd === 'help') {
-      appendLog('Available commands: help, ping, status, clear, about');
-    } else if (cmd === 'ping') {
-      appendLog('Pinging... ✅ Success. Latency: 23ms');
-    } else if (cmd === 'status') {
-      appendLog('🟢 System Status: Operational. No errors detected.');
-    } else if (cmd === 'about') {
-      appendLog('ChaosOps Console v0.1 — Built by 0xGOPS 🧠');
-    } else if (cmd === 'clear') {
-      setLogs([]);
-    } else {
-      appendLog(`Unknown command: "${cmd}". Type "help" for assistance.`);
-    }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') sendMessage();
   };
 
-  const clearLogs = () => setLogs([]);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleCommand();
-  };
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   return (
     <div className="flex flex-col h-full">
-      <h2 className="text-lg font-bold mb-2">🧠 Console</h2>
-
-      <div className="flex gap-2 mb-2">
-        <button
-          className="bg-gray-300 px-2 rounded text-xs"
-          onClick={() => alert('Logs saved (export coming soon)')}
-        >
-          🗄️ Save
-        </button>
-        <button
-          className="bg-gray-300 px-2 rounded text-xs"
-          onClick={clearLogs}
-        >
-          🗑️ Clear
-        </button>
+      {/* 💬 Message Window */}
+      <div className="flex-1 overflow-auto p-4 space-y-2 
+          bg-white/70 dark:bg-zinc-900/50 
+          backdrop-blur-md border border-white/20 dark:border-zinc-700 
+          rounded-xl shadow-xl transition-all">
+        
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            className="bg-blue-100 dark:bg-blue-900/40 
+              rounded px-4 py-2 max-w-xl 
+              border border-white/10 dark:border-zinc-700 
+              shadow-sm"
+          >
+            {msg}
+          </div>
+        ))}
+        <div ref={bottomRef} />
       </div>
 
-      <div className="bg-black text-green-400 font-mono flex-1 rounded p-2 overflow-auto">
-        {logs.length === 0 ? (
-          <p className="opacity-50">Awaiting input...</p>
-        ) : (
-          logs.map((log, i) => <div key={i}>{log}</div>)
-        )}
+      {/* 🔤 Input Bar */}
+      <div className="border-t border-white/20 dark:border-zinc-700 p-4 flex 
+          bg-white/50 dark:bg-zinc-800/50 backdrop-blur-md">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="flex-1 border border-gray-300 dark:border-zinc-700 
+              rounded p-2 mr-2 
+              bg-white/70 dark:bg-zinc-900/60 
+              focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Type your command..."
+        />
+        <button
+          onClick={sendMessage}
+          className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded 
+            shadow transition-all"
+        >
+          Send
+        </button>
       </div>
-
-      <input
-        className="border mt-2 p-2 rounded"
-        placeholder="Type command..."
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
-      />
-      <button
-        className="bg-black text-white mt-1 p-2 rounded"
-        onClick={handleCommand}
-      >
-        Run
-      </button>
     </div>
   );
 }

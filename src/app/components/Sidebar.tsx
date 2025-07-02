@@ -14,15 +14,12 @@ export default function Sidebar() {
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<number | null>(null);
 
-  // Load notes
+  // Load + Save Notes
   useEffect(() => {
     const saved = localStorage.getItem('chaosops-notes');
-    if (saved) {
-      setNotes(JSON.parse(saved));
-    }
+    if (saved) setNotes(JSON.parse(saved));
   }, []);
 
-  // Save notes
   useEffect(() => {
     localStorage.setItem('chaosops-notes', JSON.stringify(notes));
   }, [notes]);
@@ -38,10 +35,11 @@ export default function Sidebar() {
   };
 
   const deleteNote = (index: number) => {
-    if (!confirm('Delete this note?')) return;
-    const newNotes = [...notes];
-    newNotes.splice(index, 1);
-    setNotes(newNotes);
+    if (confirm('Delete this note?')) {
+      const newNotes = [...notes];
+      newNotes.splice(index, 1);
+      setNotes(newNotes);
+    }
   };
 
   const clearAll = () => {
@@ -98,14 +96,11 @@ export default function Sidebar() {
   );
 
   return (
-    <aside className="bg-gray-100 dark:bg-zinc-800 w-64 p-4 flex flex-col">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold">Scratchpad 🗂️</h2>
-        <ThemeToggle />
-      </div>
+    <aside className="bg-white/70 dark:bg-zinc-900/50 backdrop-blur-md border border-white/20 dark:border-zinc-700 rounded-xl p-4 w-64 shadow-xl flex flex-col transition-all">
+      <h2 className="text-lg font-bold mb-2">Scratchpad 🗂️</h2>
 
       <input
-        className="border p-2 mb-2 rounded"
+        className="border border-gray-300 dark:border-zinc-700 p-2 mb-2 rounded bg-white/50 dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
         placeholder="Type note..."
         value={input}
         onChange={(e) => setInput(e.target.value)}
@@ -117,18 +112,18 @@ export default function Sidebar() {
 
       <div className="flex gap-2 mb-2">
         <button
-          className="bg-black text-white px-3 py-1 rounded hover:opacity-80 transition"
+          className="bg-black hover:bg-gray-800 text-white px-3 py-1 rounded transition-all"
           onClick={addNote}
         >
           + Add
         </button>
         <button
-          className="bg-blue-500 text-white px-3 py-1 rounded hover:opacity-80 transition"
+          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-all"
           onClick={exportNotes}
         >
           ⬇️ Export
         </button>
-        <label className="bg-green-600 text-white px-3 py-1 rounded cursor-pointer hover:opacity-80 transition">
+        <label className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded cursor-pointer transition-all">
           ⬆️ Import
           <input type="file" accept=".json" className="hidden" onChange={importNotes} />
         </label>
@@ -136,13 +131,13 @@ export default function Sidebar() {
 
       <div className="flex gap-2 mb-4">
         <input
-          className="border p-1 rounded w-full"
+          className="border p-1 rounded w-full bg-white/50 dark:bg-zinc-800 border-gray-300 dark:border-zinc-700"
           placeholder="Search notes..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <button
-          className="bg-red-500 text-white px-2 rounded hover:opacity-80 transition"
+          className="bg-red-500 hover:bg-red-600 text-white px-2 rounded transition-all"
           onClick={clearAll}
         >
           🗑️ Clear All
@@ -153,14 +148,14 @@ export default function Sidebar() {
         {filteredNotes.map((note, i) => (
           <div
             key={i}
-            className="bg-white dark:bg-zinc-700 p-2 rounded shadow flex flex-col gap-1"
+            className="bg-white/70 dark:bg-zinc-800 border border-white/20 dark:border-zinc-700 p-2 rounded shadow-md flex flex-col gap-1"
           >
             <div className="flex justify-between">
-              <span className="text-sm font-medium">
+              <span className="text-sm font-medium opacity-80">
                 [{note.timestamp}]
               </span>
               <button
-                className="text-red-500 ml-2"
+                className="text-red-500 ml-2 hover:scale-110 transition-transform"
                 onClick={() => deleteNote(i)}
               >
                 ✕
@@ -171,7 +166,7 @@ export default function Sidebar() {
             </div>
             {note.text.length > 100 || note.text.includes('\n') ? (
               <button
-                className="text-blue-500 text-xs self-start"
+                className="text-blue-500 text-xs self-start hover:underline"
                 onClick={() => toggleExpand(i)}
               >
                 {expanded === i ? '▲ Collapse' : '▼ Expand'}
@@ -179,6 +174,10 @@ export default function Sidebar() {
             ) : null}
           </div>
         ))}
+      </div>
+
+      <div className="mt-4">
+        <ThemeToggle />
       </div>
     </aside>
   );
