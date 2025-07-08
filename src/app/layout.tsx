@@ -22,6 +22,7 @@ export default function RootLayout({
         text-black dark:text-white transition-colors`}
       >
         <div className="flex flex-col h-screen">
+          {/* 🔳 Top Bar */}
           <header className="bg-black/80 dark:bg-zinc-950/80 
             backdrop-blur-md border-b border-white/10 dark:border-zinc-800 
             text-white p-4 flex justify-between items-center 
@@ -35,11 +36,22 @@ export default function RootLayout({
             </div>
           </header>
 
+          {/* 🔥 Main Layout */}
           <div className="flex flex-1">
+            {/* 🗂️ Sidebar */}
             <aside className="w-[280px] bg-white dark:bg-zinc-800 shadow-md p-4">
               <Scratchpad />
+
+              {/* 🔗 Agent Navigation Link */}
+              <a
+                href="/agent"
+                className="mt-4 block text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                🧠 Agent
+              </a>
             </aside>
 
+            {/* 💻 Main */}
             <main className="flex-1 p-4 
               bg-white/70 dark:bg-zinc-900/50 
               backdrop-blur-md rounded-xl shadow-xl 
