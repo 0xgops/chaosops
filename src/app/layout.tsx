@@ -1,6 +1,6 @@
+// src/app/layout.tsx
 import './globals.css';
 import { Inter } from 'next/font/google';
-import Scratchpad from './components/Scratchpad'; // <-- 🔁 Swap Sidebar for Scratchpad
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -39,22 +39,14 @@ export default function RootLayout({
             </div>
           </header>
 
-          {/* 🔥 Main Layout */}
-          <div className="flex flex-1">
-            {/* 🗂️ Replaced Sidebar with Scratchpad */}
-            <aside className="w-[280px] bg-white dark:bg-zinc-800 shadow-md p-4">
-              <Scratchpad />
-            </aside>
-
-            {/* 💻 Main */}
-            <main className="flex-1 p-4 
-              bg-white/70 dark:bg-zinc-900/50 
-              backdrop-blur-md rounded-xl shadow-xl 
-              border border-white/10 dark:border-zinc-800 
-              overflow-auto flex flex-col gap-4">
-              {children}
-            </main>
-          </div>
+          {/* 🔥 Main */}
+          <main className="flex-1 p-4 
+            bg-white/70 dark:bg-zinc-900/50 
+            backdrop-blur-md rounded-xl shadow-xl 
+            border border-white/10 dark:border-zinc-800 
+            overflow-auto flex flex-col gap-4">
+            {children}
+          </main>
         </div>
       </body>
     </html>
