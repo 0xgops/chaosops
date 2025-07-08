@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function Scratchpad() {
   const [notes, setNotes] = useState<string[]>([]);
@@ -43,7 +43,9 @@ export default function Scratchpad() {
   };
 
   const clearAll = () => setNotes([]);
-  const filteredNotes = notes.filter((note) => note.toLowerCase().includes(search.toLowerCase()));
+  const filteredNotes = notes.filter((note) =>
+    note.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="space-y-2">
