@@ -1,24 +1,25 @@
-import { NextResponse } from 'next/server';
-import { openai } from '@/lib/openai';
+import { NextRequest, NextResponse } from 'next/server';
+import OpenAI from 'openai';
 
-export async function POST(req: Request) {
-  try {
-    const { prompt } = await req.json();
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-    if (!prompt) {
-      return NextResponse.json({ error: 'No prompt provided' }, { status: 400 });
-    }
+const agentPersonalities: Record<string, string> = {
+  analyst: 'You are a precise and logical data analyst who loves clarity, charts, and actionable insights.',
+  coder: 'You are an expert software engineer who explains things clearly and delivers bug-free code.',
+  explorer: 'You are a philosophical, visionary explorer who dives deep into abstract concepts and big ideas.',
+};
 
-    const response = await openai.chat.completions.create({
-      messages: [{ role: 'user', content: prompt }],
-      model: 'gpt-4',
-    });
+export async function POST(req: NextRequest) {
+  const { prompt, agentType = 'explorer' } = await req.json();
+  const system = agentPersonalities[agentType] || agentPersonalities.explorer;
 
-    const output = response.choices[0]?.message?.content;
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o',
+    messages: [
+      { role: 'system', content: system },
+      { role: 'user', content: prompt },
+    ],
+  });
 
-    return NextResponse.json({ response: output });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Request failed' }, { status: 500 });
-  }
+  return NextResponse.json({ response: response.choices[0].message.content });
 }
