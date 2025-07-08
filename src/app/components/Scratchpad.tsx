@@ -1,23 +1,28 @@
 'use client';
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 
 export default function Scratchpad() {
   const [notes, setNotes] = useState<string[]>([]);
   const [input, setInput] = useState('');
+  const [search, setSearch] = useState('');
 
   const addNote = () => {
     if (!input.trim()) return;
-    setNotes([...notes, input]);
+    setNotes((prev) => [...prev, input.trim()]);
     setInput('');
   };
 
   const exportNotes = () => {
     const blob = new Blob([JSON.stringify(notes, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'notes.json';
-    a.click();
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'notes.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const importNotes = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,9 +31,11 @@ export default function Scratchpad() {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const imported = JSON.parse(reader.result as string);
-        if (Array.isArray(imported)) setNotes(imported);
-      } catch (err) {
+        const parsed = JSON.parse(reader.result as string);
+        if (Array.isArray(parsed)) {
+          setNotes(parsed);
+        }
+      } catch {
         alert('Invalid JSON');
       }
     };
@@ -36,32 +43,61 @@ export default function Scratchpad() {
   };
 
   const clearAll = () => setNotes([]);
+  const filteredNotes = notes.filter((note) => note.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div>
-      <h2 className="text-lg font-bold mb-2">Scratchpad 🧳</h2>
+    <div className="space-y-2">
+      <h2 className="text-lg font-semibold">Scratchpad 📒</h2>
+
       <input
         type="text"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && addNote()}
         placeholder="Type note..."
-        className="w-full p-2 rounded border border-gray-300 mb-2 text-black"
+        className="w-full p-2 border rounded"
       />
-      <div className="flex gap-2 mb-2">
-        <button onClick={addNote} className="bg-black text-white px-4 py-1 rounded">+ Add</button>
-        <button onClick={exportNotes} className="bg-blue-500 text-white px-4 py-1 rounded">Export</button>
-        <label className="bg-green-500 text-white px-4 py-1 rounded cursor-pointer">
-          <input type="file" accept="application/json" onChange={importNotes} className="hidden" />
-          Import
+
+      <div className="flex gap-2">
+        <button
+          onClick={addNote}
+          className="bg-black text-white px-3 py-1 rounded hover:bg-gray-800"
+        >
+          + Add
+        </button>
+        <button
+          onClick={exportNotes}
+          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+        >
+          ⬇️ Export
+        </button>
+        <label className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 cursor-pointer">
+          ⬆️ Import
+          <input type="file" accept=".json" onChange={importNotes} className="hidden" />
         </label>
       </div>
+
       <input
         type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
         placeholder="Search notes..."
-        className="w-full p-2 rounded border border-gray-300 mb-2 text-black"
+        className="w-full p-2 border rounded"
       />
-      <button onClick={clearAll} className="bg-red-500 text-white px-4 py-1 rounded w-full">Clear All</button>
+
+      <button
+        onClick={clearAll}
+        className="bg-red-600 text-white w-full py-1 rounded hover:bg-red-700"
+      >
+        🗑️ Clear All
+      </button>
+
+      <ul className="space-y-1 pt-2 max-h-64 overflow-y-auto text-sm">
+        {filteredNotes.map((note, i) => (
+          <li key={i} className="bg-gray-200 dark:bg-zinc-700 p-2 rounded">
+            {note}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
