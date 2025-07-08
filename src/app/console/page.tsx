@@ -1,11 +1,6 @@
-'use client';
-
-import Console from './Console';
+import React from 'react';
+import Console from '@/app/components/Console';
 
 export default function ConsolePage() {
-  return (
-    <div className="flex-1 overflow-auto">
-      <Console />
-    </div>
-  );
+  return <Console />;
 }
