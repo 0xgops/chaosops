@@ -3,62 +3,53 @@
 import { useState } from 'react';
 
 export default function AgentPage() {
-  const [prompt, setPrompt] = useState('');
+  const [input, setInput] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
-  const [agentType, setAgentType] = useState('explorer');
-
-  const agents = {
-    explorer: '🛰️ Explorer',
-    analyst: '🧠 Analyst',
-    coder: '💻 Coder',
-  };
+  const [role, setRole] = useState('Default');
 
   const sendPrompt = async () => {
-    if (!prompt.trim()) return;
+    if (!input.trim()) return;
     setLoading(true);
     setResponse('');
 
     try {
       const res = await fetch('/api/agent', {
         method: 'POST',
-        body: JSON.stringify({ prompt, agentType }),
+        body: JSON.stringify({ prompt: input, role }),
+        headers: { 'Content-Type': 'application/json' },
       });
 
       const data = await res.json();
-      setResponse(data.response);
+      setResponse(data.response || '⚠️ No response.');
     } catch {
-      setResponse('⚠️ Error. Please try again.');
+      setResponse('❌ Error. Try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-4 space-y-4">
-      <h1 className="text-xl font-bold">Agent Console</h1>
+    <div className="p-6 max-w-2xl mx-auto space-y-4">
+      <h1 className="text-2xl font-bold">🧠 Multi-Agent Prompt</h1>
 
-      <div className="flex gap-2">
-        {Object.entries(agents).map(([key, label]) => (
-          <button
-            key={key}
-            className={`px-3 py-1 rounded border ${
-              agentType === key
-                ? 'bg-black text-white'
-                : 'bg-white dark:bg-zinc-700 text-black dark:text-white'
-            }`}
-            onClick={() => setAgentType(key)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <select
+        className="border px-3 py-2 rounded"
+        value={role}
+        onChange={(e) => setRole(e.target.value)}
+      >
+        <option value="Default">Default</option>
+        <option value="Analyst">Analyst</option>
+        <option value="Explorer">Explorer</option>
+        <option value="Coder">Coder</option>
+      </select>
 
       <textarea
-        className="w-full p-2 border rounded h-32 dark:bg-zinc-900"
-        placeholder="Enter your prompt..."
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
+        className="w-full border rounded p-2"
+        rows={5}
+        placeholder="Ask the agent something..."
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -70,15 +61,15 @@ export default function AgentPage() {
       <button
         onClick={sendPrompt}
         disabled={loading}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
+        className="bg-black text-white px-4 py-2 rounded disabled:opacity-50"
       >
-        {loading ? 'Thinking...' : 'Submit'}
+        {loading ? 'Thinking...' : 'Send'}
       </button>
 
       {response && (
-        <pre className="whitespace-pre-wrap mt-4 p-3 bg-gray-100 dark:bg-zinc-800 rounded">
+        <div className="bg-gray-100 dark:bg-zinc-800 p-4 rounded whitespace-pre-wrap">
           {response}
-        </pre>
+        </div>
       )}
     </div>
   );
