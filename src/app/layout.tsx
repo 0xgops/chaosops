@@ -1,6 +1,6 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
-import Sidebar from './components/Sidebar';
+import Scratchpad from './components/Scratchpad'; // <-- 🔁 Swap Sidebar for Scratchpad
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -41,8 +41,10 @@ export default function RootLayout({
 
           {/* 🔥 Main Layout */}
           <div className="flex flex-1">
-            {/* 🗂️ Sidebar */}
-            <Sidebar />
+            {/* 🗂️ Replaced Sidebar with Scratchpad */}
+            <aside className="w-[280px] bg-white dark:bg-zinc-800 shadow-md p-4">
+              <Scratchpad />
+            </aside>
 
             {/* 💻 Main */}
             <main className="flex-1 p-4 
