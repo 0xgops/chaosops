@@ -1,37 +1,41 @@
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-const rolePrompts: Record<string, string> = {
-  Analyst: 'You are an expert data analyst. Provide concise, clear insights using structured logic.',
-  Explorer: 'You are a curious explorer of ideas and concepts. Offer creative, open-ended interpretations.',
-  Coder: 'You are a skilled software engineer. Provide clean, efficient code with brief explanations.',
-  Default: 'You are a helpful AI assistant. Respond clearly and helpfully.',
-};
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { prompt, role = 'Default' } = body;
+    const { input } = await req.json();
+    const apiKey = process.env.OPENAI_API_KEY;
 
-    const systemPrompt = rolePrompts[role] || rolePrompts.Default;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
+    }
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: prompt },
-      ],
-      temperature: 0.7,
+    const chatResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o', // or 'gpt-3.5-turbo'
+        messages: [
+          { role: 'system', content: 'You are a helpful assistant who jokes a little.' },
+          { role: 'user', content: input },
+        ],
+        temperature: 0.7,
+      }),
     });
 
-    const response = completion.choices[0]?.message?.content || '⚠️ No response generated.';
-    return NextResponse.json({ response });
-  } catch (error) {
-    console.error('API Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    if (!chatResponse.ok) {
+      const errorData = await chatResponse.json();
+      return NextResponse.json({ error: errorData.error.message }, { status: 500 });
+    }
+
+    const data = await chatResponse.json();
+    const reply = data.choices?.[0]?.message?.content || 'No reply';
+
+    return NextResponse.json({ message: reply });
+  } catch (err: any) {
+    console.error('Agent route error:', err);
+    return NextResponse.json({ error: 'Server error occurred' }, { status: 500 });
   }
 }
