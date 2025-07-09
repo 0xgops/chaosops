@@ -12,7 +12,7 @@ export default function AgentPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/agent', {
+      const res = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ input }),
