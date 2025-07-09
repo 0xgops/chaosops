@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     const reply = data.choices?.[0]?.message?.content || 'No reply';
 
     return NextResponse.json({ message: reply });
-  } catch (err: any) {
+  } catch (err) {
     console.error('Agent route error:', err);
     return NextResponse.json({ error: 'Server error occurred' }, { status: 500 });
   }
